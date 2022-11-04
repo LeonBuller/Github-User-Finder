@@ -2,8 +2,8 @@ import { createContext, useReducer } from "react";
 import githubReducer from "./GithubReducer";
 
 const GithubContext = createContext();
-const GITHUB_URL = process.env.GITHUB_URL;
-const GITHUB_API_KEY = process.env.GITHUB_API_KEY;
+const REACT_APP_GITHUB_URL = process.env.REACT_APP_GITHUB_URL;
+const REACT_APP_GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 
 export const GithubProvider = ({ children }) => {
   const initialState = {
@@ -19,11 +19,14 @@ export const GithubProvider = ({ children }) => {
   const searchUsers = async (text) => {
     setLoading();
     const params = new URLSearchParams({ q: text });
-    const response = await fetch(`${GITHUB_URL}/search/users?${params}`, {
-      headers: {
-        Authorization: `${GITHUB_API_KEY}`,
-      },
-    });
+    const response = await fetch(
+      `${REACT_APP_GITHUB_URL}/search/users?${params}`,
+      {
+        headers: {
+          Authorization: `${REACT_APP_GITHUB_TOKEN}`,
+        },
+      }
+    );
 
     const { items } = await response.json();
 
@@ -37,9 +40,9 @@ export const GithubProvider = ({ children }) => {
   // Retrives a single user
   const getUser = async (login) => {
     setLoading();
-    const response = await fetch(`${GITHUB_URL}/users/${login}`, {
+    const response = await fetch(`${REACT_APP_GITHUB_URL}/users/${login}`, {
       headers: {
-        Authorization: `token ${GITHUB_API_KEY}`,
+        Authorization: `token ${REACT_APP_GITHUB_TOKEN}`,
       },
     });
     if (response.status === 404) {
@@ -61,10 +64,10 @@ export const GithubProvider = ({ children }) => {
     const params = new URLSearchParams({ sort: "created", per_page: 10 });
 
     const response = await fetch(
-      `${GITHUB_URL}/users/${login}/repos?${params}`,
+      `${REACT_APP_GITHUB_URL}/users/${login}/repos?${params}`,
       {
         headers: {
-          Authorization: `token ${GITHUB_API_KEY}`,
+          Authorization: `token ${REACT_APP_GITHUB_TOKEN}`, //A function that sends a type to the reducer "GithubReducer" and inside the reducer the case called "SET_LOADING" that sets the loading to the true
         },
       }
     );
