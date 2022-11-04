@@ -2,6 +2,8 @@ import { createContext, useReducer } from "react";
 import githubReducer from "./GithubReducer";
 
 const GithubContext = createContext();
+const GITHUB_URL = process.env.GITHUB_URL;
+const GITHUB_API_KEY = process.env.GITHUB_API_KEY;
 
 export const GithubProvider = ({ children }) => {
   const initialState = {
@@ -17,14 +19,11 @@ export const GithubProvider = ({ children }) => {
   const searchUsers = async (text) => {
     setLoading();
     const params = new URLSearchParams({ q: text });
-    const response = await fetch(
-      `https://api.github.com/search/users?${params}`,
-      {
-        headers: {
-          Authorization: `token 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`,
-        },
-      }
-    );
+    const response = await fetch(`${GITHUB_URL}/search/users?${params}`, {
+      headers: {
+        Authorization: `${GITHUB_API_KEY}`,
+      },
+    });
 
     const { items } = await response.json();
 
@@ -38,14 +37,11 @@ export const GithubProvider = ({ children }) => {
   // Retrives a single user
   const getUser = async (login) => {
     setLoading();
-    const response = await fetch(
-      `https://api.github.com/search/user/${login}`,
-      {
-        headers: {
-          Authorization: `token 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`,
-        },
-      }
-    );
+    const response = await fetch(`${GITHUB_URL}/users/${login}`, {
+      headers: {
+        Authorization: `token ${GITHUB_API_KEY}`,
+      },
+    });
     if (response.status === 404) {
       window.location = "/notfound";
     } else {
@@ -58,14 +54,17 @@ export const GithubProvider = ({ children }) => {
       });
     }
   };
+
   //Get user repos
   const getUserRepos = async (login) => {
     setLoading();
+    const params = new URLSearchParams({ sort: "created", per_page: 10 });
+
     const response = await fetch(
-      `https://api.github.com/users/${login}/repos`,
+      `${GITHUB_URL}/users/${login}/repos?${params}`,
       {
         headers: {
-          Authorization: `token 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`,
+          Authorization: `token ${GITHUB_API_KEY}`,
         },
       }
     );
